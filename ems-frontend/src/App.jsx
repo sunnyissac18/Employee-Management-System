@@ -1,24 +1,43 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import "./App.css";
-import FooterComponent from "./components/FooterComponent";
+
 import HeaderComponent from "./components/HeaderComponent";
-import ListEmployeeComponent from "./components/ListEmployeeComponent";
+import FooterComponent from "./components/FooterComponent";
+
+import Dashboard from "./components/Dashboard";
 import EmployeeComponent from "./components/EmployeeComponent";
 
+import { useAuth } from "./auth/AuthProvider";
+
 function App() {
+  const { isAdmin } = useAuth();
+
   return (
-    <>
-      <BrowserRouter>
-        <HeaderComponent />
-        <Routes>
-          <Route path="/" element={<ListEmployeeComponent />}></Route>
-          <Route path="/employees" element={<ListEmployeeComponent />}></Route>
-          <Route path="/add-employee" element={<EmployeeComponent />}></Route>
-          <Route path="/update-employee/:id" element={<EmployeeComponent/>} ></Route>
-        </Routes>
-        <FooterComponent />
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <HeaderComponent />
+
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+
+        <Route
+          path="/employees"
+          element={isAdmin() ? <Dashboard /> : <Dashboard />}
+        />
+
+        <Route
+          path="/add-employee"
+          element={isAdmin() ? <EmployeeComponent /> : <Dashboard />}
+        />
+
+        <Route
+          path="/update-employee/:id"
+          element={isAdmin() ? <EmployeeComponent /> : <Dashboard />}
+        />
+      </Routes>
+
+      <FooterComponent />
+    </BrowserRouter>
   );
 }
 

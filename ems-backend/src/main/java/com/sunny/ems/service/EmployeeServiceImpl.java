@@ -39,9 +39,17 @@ public class EmployeeServiceImpl implements EmployeeService{
     @Override
     public List<EmployeeDto> getAllEmployees() {
         List<Employee> employees= employeeRepository.findAll();
-        return employees.stream().map(
-                (employee )-> EmployeeMapper.mapToEmployeeDto(employee) )
+        return employees.stream().map((employee )-> EmployeeMapper.mapToEmployeeDto(employee) )
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public EmployeeDto getEmployeeByEmail(String email) {
+
+        Employee employee = employeeRepository.findByEmail(email)
+                .orElseThrow(()-> new ResourceNotFoundException("User with given email not found"));
+
+        return EmployeeMapper.mapToEmployeeDto(employee);
     }
 
     @Override

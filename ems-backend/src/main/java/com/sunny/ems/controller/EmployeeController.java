@@ -5,6 +5,8 @@ import com.sunny.ems.service.EmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public class EmployeeController {
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable("id") Long employeeId){
         EmployeeDto employeeDto=employeeService.getEmployeeById(employeeId);
         return ResponseEntity.ok(employeeDto);
@@ -35,7 +37,7 @@ public class EmployeeController {
         return ResponseEntity.ok(employees);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<EmployeeDto> updateEmployee(
             @PathVariable("id") Long employeeId,
             @RequestBody EmployeeDto updatedEmployee){
@@ -44,9 +46,20 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeDto);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEmployee(@PathVariable("id") Long employeeId){
         employeeService.deleteEmployee(employeeId);
         return ResponseEntity.ok("Employee with id :"+employeeId+" ,deleted Successfully");
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<EmployeeDto> getCurrentEmployee(
+            @AuthenticationPrincipal Jwt jwt) {
+
+        String email = jwt.getClaimAsString("email");
+
+        EmployeeDto employee = employeeService.getEmployeeByEmail(email);
+
+        return ResponseEntity.ok(employee);
     }
 }
